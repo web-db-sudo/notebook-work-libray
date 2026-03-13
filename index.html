@@ -39,7 +39,7 @@
 										</header>
 										
 										<ul class="actions">
-											<li><a href="https://drive.google.com/file/d/1E9KW_r9dHaK9g5CGTMA_uR9oHbHWhk5o/view?usp=drive_link" class="button big">Download our App</a></li>
+											
 											<li><a href="https://workhaul.my.canva.site/mhk" class="button big">Go to my old Website</a></li>
 										</ul>
 									</div>
@@ -253,6 +253,50 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+		<script>
+			let deferredPrompt;
+
+			window.addEventListener('beforeinstallprompt', (e) => {
+				// Prevent the mini-infobar from appearing on mobile
+				e.preventDefault();
+				// Stash the event so it can be triggered later.
+				deferredPrompt = e;
+				// Update UI notify the user they can install the PWA
+				showInstallPromotion();
+			});
+
+			function showInstallPromotion() {
+				// Show a button or banner to install the app
+				const installButton = document.createElement('button');
+				installButton.textContent = 'Install App';
+				installButton.className = 'button big';
+				installButton.style.position = 'fixed';
+				installButton.style.bottom = '20px';
+				installButton.style.right = '20px';
+				installButton.style.zIndex = '1000';
+				installButton.onclick = installApp;
+				document.body.appendChild(installButton);
+			}
+
+			function installApp() {
+				// Hide the app provided install promotion
+				// Show the install prompt
+				deferredPrompt.prompt();
+				// Wait for the user to respond to the prompt
+				deferredPrompt.userChoice.then((choiceResult) => {
+					if (choiceResult.outcome === 'accepted') {
+						console.log('User accepted the install prompt');
+					} else {
+						console.log('User dismissed the install prompt');
+					}
+					deferredPrompt = null;
+				});
+			}
+
+			window.addEventListener('appinstalled', (evt) => {
+				console.log('App was installed.');
+			});
+		</script>
 		<script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
